@@ -1,5 +1,5 @@
 # Building a remote control robot car with the Maker Pi RP2040
-![RP2040 Robot-Car](../img/BlueToothMounted.jpg)
+![RP2040 Robot-Car](./img/BlueToothMounted.jpg)
 
 This was the robot car that I built using the parts kit as descriped below.
 
