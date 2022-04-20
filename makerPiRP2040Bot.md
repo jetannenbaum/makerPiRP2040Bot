@@ -30,15 +30,10 @@ Additional parts (not included in the kit):
 - An IDE capable of supporting MicroPython.  I'm using [Thonny](https://thonny.org/)
 - Software capable of connecting to and writing to the bluetooth module (I'm using LightBlue)
 
- **Driver for the LEDs on the Maker Pi board**
-
-- [Neopixel library](https://github.com/blaz-r/pi_pico_neopixel)
-
 **There are several parts to this project.  Let's break them down by tasks:**
 
 - Remove the default CircuitPython run-time
 - Install the MicroPython run-time
-- Adding the Neopixel library to the board
 - Communicate with the bluetooth module
 - Get data from the ultrasonic sensor
 - Assemble the chassis 
@@ -57,10 +52,6 @@ Download the MicroPython run-tme, available [here](https://micropython.org/downl
 Once again, turn off the board, hold down the BOOT button, and turn on the board.  You should see the board show up as a USB drive again.  Drag the new utf file over to the drive, turn the power off, and turn it back on without pressing the BOOT button.  The MicroPython run-time should now be loaded onto your board.
 
 Assuming you are using the Thonny IDE, you should be able to configure the application to use the Raspberry Pi Pico MicroPython interface.  When you are done, press the Stop/Reset button and you should see the MicroPython RPEL prompt identifying the version of MicroPython running on your board.
-
-**Adding the Neopixel library to the board**
-
-Download the [neopixel library](https://github.com/blaz-r/pi_pico_neopixel) to your local machine.  You can open the library in Thonny and then store it on the Maker Pi RP2040 board.  First, create a lib folder on the board, then save the library.  
 
 **Communicate with the bluetooth module**
 
@@ -223,15 +214,16 @@ Additionally, you should be able to wave your hand in front of the ultrasonic se
 from machine import Pin, PWM, UART
 import utime
 import time
-# We are using https://github.com/blaz-r/pi_pico_neopixel
-from neopixel import Neopixel
+from neopixel import NeoPixel
 
 NUMBER_PIXELS = 2
-STATE_MACHINE = 0
 LED_PIN = 18
 
-# The Neopixels on the Maker Pi RP2040 are the GRB variety, not RGB
-strip = Neopixel(NUMBER_PIXELS, STATE_MACHINE, LED_PIN, "GRB")
+#Define the pin as output
+pin = Pin(LED_PIN, Pin.OUT)
+
+# Define the NeoPixel Strip
+strip = NeoPixel(pin, NUMBER_PIXELS)
 
 # Color RGB values
 red = (255, 0, 0)
@@ -242,8 +234,8 @@ startColors = (red, black, red, black, yellow, black, yellow, black, green, blac
 
 def showColor(color):
     for i in range(NUMBER_PIXELS):
-        strip.set_pixel(i, color)
-    strip.show()
+        strip[i] = color
+    strip.write()
 
 # Using Grove 5 Connector
 TRIGGER_PIN = 6 # White Wire
@@ -326,14 +318,14 @@ def reverseSlow():
 def left():
     left_forward.duty_u16(0)
     right_reverse.duty_u16(0)
-    left_reverse.duty_u16(FULL_POWER_LEVEL)    
-    right_forward.duty_u16(FULL_POWER_LEVEL)
+    left_reverse.duty_u16(FULL_POWER_LEVEL // 2)    
+    right_forward.duty_u16(FULL_POWER_LEVEL // 2)
     
 def right():
     right_forward.duty_u16(0)
     left_reverse.duty_u16(0)
-    right_reverse.duty_u16(FULL_POWER_LEVEL)    
-    left_forward.duty_u16(FULL_POWER_LEVEL)
+    right_reverse.duty_u16(FULL_POWER_LEVEL // 2)    
+    left_forward.duty_u16(FULL_POWER_LEVEL // 2)
     
 def stop():
     right_forward.duty_u16(0)
